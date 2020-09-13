@@ -85,6 +85,9 @@ jobs:
         chmod +x $DIY_OP_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_OP_SH
+        
+    - name: 下载 Passwall 插件 
+      run: cd openwrt && echo -e "\nsrc-git lienol https://github.com/Lienol/openwrt-package" >> feeds.conf.default
 
     - name: 下载源加2020-diy-plug.sh跟feeds.conf.default设置
       run: |
