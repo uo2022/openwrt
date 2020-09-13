@@ -40,8 +40,8 @@ env:
   REPO_URL: https://github.com/openwrt/openwrt
   REPO_BRANCH: openwrt-19.07
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: default.config
-  DIY_OP_SH: diy-plug.sh
+  CONFIG_FILE: 2020-default.config
+  DIY_OP_SH: 2020-diy-plug.sh
   SSH_ACTIONS: true
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
@@ -51,7 +51,7 @@ env:
 
 jobs:
   build:
-    name: 编译OpenWrt-official固件
+    name: 编译OpenWrt-2020固件
     runs-on: ubuntu-18.04
     if: github.event.repository.owner.id == github.event.sender.id
 
@@ -79,14 +79,14 @@ jobs:
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-    - name: 加载diy-plug.sh跟feeds.conf.default设置
+    - name: 加载2020-diy-plug.sh跟feeds.conf.default设置
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
         chmod +x $DIY_OP_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_OP_SH
 
-    - name: 下载源加diy-plug.sh跟feeds.conf.default设置
+    - name: 下载源加2020-diy-plug.sh跟feeds.conf.default设置
       run: |
         cd openwrt
         ./scripts/feeds clean
@@ -151,16 +151,16 @@ jobs:
         name: OpenWrt_firmware_${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
 
-    - name: 上传固件到cowtransfer网盘
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
-        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
+#    - name: 上传固件到cowtransfer网盘
+#      if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
+#      run: |
+#        curl -fsSL git.io/file-transfer | sh
+#        ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
+#        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
 
-    - name: 上传固件到WeTransfer网盘
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
-        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
+#    - name: 上传固件到WeTransfer网盘
+#      if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
+#      run: |
+#        curl -fsSL git.io/file-transfer | sh
+#        ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
+#        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
